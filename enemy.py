@@ -13,22 +13,26 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.reward = reward
         self.board = board  # Сохраняем ссылку на объект Board
+        self.health = max_health
+        self.max_health = max_health
 
         delta = 10
         delta_x, delta_y = 0, 0
         if random.randint(0, 1):
-            delta_x = random.randint(-delta, delta)
+            delta_x = random.randint(0, delta)
         else:
             delta_y = random.randint(-delta, delta)
         self.way = way
         self.pixels_way = [(i[0] * 30 + 15 + delta_x, i[1] * 30 + 15 + delta_y) for i in self.way]
         self.rect.centerx = self.pixels_way[0][0]
         self.rect.centery = self.pixels_way[0][1]
-        self.speed = speed
+
+        self.float_pos = [self.rect.centerx, self.rect.centery]
+
+        self.speed = speed / 40
         self.turn_speed = turn_speed
         self.original_image = pygame.image.load(image).convert_alpha()
-        self.health = max_health
-        self.max_health = max_health
+
         self.angle = 0
         self.turning = False
         self.target_angle = 0
@@ -80,8 +84,9 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.x, self.rect.y = next_point[0] - 15, next_point[1] - 15
             self.current_index += 1
         else:  # Иначе продолжаем движение
-            self.rect.x += self.speed * delta_x / distance
-            self.rect.y += self.speed * delta_y / distance
+            self.float_pos[0] += self.speed * delta_x / distance
+            self.float_pos[1] += self.speed * delta_y / distance
+            self.rect.x, self.rect.y = self.float_pos[0] - 15, self.float_pos[1] - 15
         # print(self.rect.center, math.sqrt(delta_x ** 2 + delta_y ** 2))
 
     def turn(self):
@@ -121,10 +126,12 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Tank(Enemy):
-    def __init__(self, pos, image, way):
-        super().__init__(pos, image, way, speed=1, turn_speed=2)  # Медленный поворот
+    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board)  # Медленный поворот
+        self.name = 'Tank'
 
 
 class Car(Enemy):
-    def __init__(self, pos, image, way, speed=3, turn_speed=5, board=None):
-        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board)  # Быстрый поворот
+    def __init__(self, pos, way, image='assets/car1.png', speed=30, turn_speed=3, board=None):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50)  # Быстрый поворот
+        self.name = 'Car'

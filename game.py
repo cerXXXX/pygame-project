@@ -47,7 +47,8 @@ class Game:
             return
         self.level_manager.current_level = level_number
         level = self.level_manager.generate_level(level_number)
-        self.board = Board(20, 20, 0, 0, towers_data=towers_data, level=level_number, level_manager=self.level_manager)
+        self.board = Board(20, 20, 0, 0, waves=level.waves, towers_data=towers_data, level=level_number,
+                           level_manager=self.level_manager, super_events=level.super_events)
         self.board.set_way(level.way)
         self.board.set_building_places(level.building_places)
         self.state = GameState.GAME
@@ -84,8 +85,10 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p and self.state == GameState.GAME:
                         self.toggle_pause()
-                if self.board:
-                    self.board.handle_event(event)
+            if self.board:
+                self.board.handle_event(event)
+                if not self.board.game_state:
+                    self.state = GameState.LEVEL_END
 
             self.screen.fill('lightgreen')
             if self.state == GameState.MAIN_MENU:
@@ -107,6 +110,7 @@ class GameState:
     GAME = 'game'
     LEVEL_SELECT = 'level_select'
     PAUSE = 'pause'
+    LEVEL_END = 'level_end'
 
 
 class LevelManager:
@@ -115,16 +119,16 @@ class LevelManager:
         self.completed_levels = set()  # Хранит номера пройденных уровней
 
     def generate_level(self, difficulty):
-        levels = [None, Level([(0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5), (8, 5), (9, 5),
-                               (9, 6), (9, 7), (10, 7), (11, 7), (12, 7), (12, 8), (12, 9), (12, 10), (12, 11),
-                               (12, 12),
-                               (12, 13), (11, 13), (10, 13), (9, 13), (8, 13), (7, 13), (6, 13), (5, 13), (5, 14),
-                               (5, 15),
-                               (5, 16),
-                               (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (12, 17), (13, 17),
-                               (14, 17),
-                               (15, 17), (16, 17), (17, 17), (18, 17), (19, 17)], [], None,
-                              [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)])]
+        levels = {1: DefaultLevel(1),
+                  2: DefaultLevel(2),
+                  3: DefaultLevel(3),
+                  4: DefaultLevel(4),
+                  5: DefaultLevel(5),
+                  6: DefaultLevel(6),
+                  7: DefaultLevel(7),
+                  8: DefaultLevel(8),
+                  9: DefaultLevel(9),
+                  10: DefaultLevel(10)}
         # Генерация уровня по сложности
         return levels[difficulty]
 

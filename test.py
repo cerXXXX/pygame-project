@@ -585,6 +585,7 @@ class Game:
                     if event.key == pygame.K_p and self.state == GameState.GAME:
                         self.toggle_pause()
                     if event.key == pygame.K_SPACE and self.state == GameState.GAME:
+                        # TODO: изменить
                         level = self.level_manager.generate_level(1)
                         self.enemies.append(Tank(level.way[0], 'tank1.png', level.way))
 

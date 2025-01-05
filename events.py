@@ -20,7 +20,7 @@ class SuperEvent:
 
 
 class ArtilleryStrike(SuperEvent):
-    def __init__(self, frequency, board, text, duration=5):
+    def __init__(self, board, text='ArtilleryStrike', frequency=0.1, duration=5):
         super().__init__(frequency, board, text, duration)
         self.damage = 100
         self.radius = 50
@@ -58,8 +58,17 @@ class ArtilleryCircle(pygame.sprite.Sprite):
         self.radius = radius
         self.pos = pos
         self.image = pygame.image.load('assets/artillerystrike1.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (int(self.radius * 2), int(self.radius * 2)))
         self.rect = self.image.get_rect()
         self.rect.center = pos
 
     def update(self, screen):
         screen.blit(self.image, self.rect)
+
+
+class NothingEvent(SuperEvent):
+    def __init__(self, board, text='pass', frequency=10, duration=0):
+        super().__init__(frequency, board, text, duration)
+
+    def update(self, screen):
+        pass

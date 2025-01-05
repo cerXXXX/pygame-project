@@ -8,7 +8,7 @@ from enemy import *
 
 class Board:
     def __init__(self, width: int, height: int, left: int = 10, top: int = 10, cell_size: int = 30,
-                 towers_data: list = None, level: int = 1, level_manager=None):
+                 towers_data: list = None, level: int = 1, waves=None, level_manager=None, super_events=None):
         self.width = width
         self.height = height
         self.board = [[0] * width for _ in range(height)]
@@ -33,11 +33,12 @@ class Board:
         self.coin_icon = pygame.image.load('assets/coin.png')  # Иконка монеты
         self.coin_icon = pygame.transform.scale(self.coin_icon, (30, 30))
 
-        self.super_events = [SuperEvent(0.1, self, 'ArtilleryStrike'),
-                             SuperEvent(10, self, 'pass')]
+        self.super_events = []
+        self.set_super_events(super_events if super_events else [])
+
         self.curr_super_event = None
         self.time_between_events = 5
-        self.last_super_event_time = time.time()  # + 15
+        self.last_super_event_time = time.time()  # TODO: + 15 (время с начала игры без событий)
         self.max_num_super_events = 3
 
         self.level = level
@@ -46,6 +47,10 @@ class Board:
         self.level_manager = level_manager
 
         self.animation_list = []
+
+        self.waves = waves
+
+        self.game_state = True
 
     def set_super_events(self, events: list[SuperEvent]):
         self.super_events = events
@@ -60,6 +65,17 @@ class Board:
         self.cell_size = cell_size
 
     def render(self, screen):
+        if not self.game_state:
+            return
+        if not self.enemy_group.sprites():
+            if self.waves:
+                wave = self.waves.pop(0)
+                for enemy in wave:
+                    entity = enemy(pos=self.way[0], way=self.way, board=self)
+                    self.enemy_group.add(entity)
+            else:
+                self.game_state = False
+                return
         # Отрисовка сетки игрового поля
         for y in range(self.height):
             for x in range(self.width):
@@ -107,8 +123,7 @@ class Board:
                 self.max_num_super_events -= 1
 
                 if super_event.text == 'ArtilleryStrike':
-                    self.curr_super_event = ArtilleryStrike(super_event.frequency, self, 'ArtilleryStrike',
-                                                            super_event.duration)
+                    self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
 
         if self.curr_super_event:
@@ -241,8 +256,9 @@ class Board:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 level_data = self.level_manager.generate_level(self.level)
-                enemy = Car(level_data.way[0], 'assets/car1.png', level_data.way, speed=1, board=self)
+                enemy = Car(level_data.way[0], level_data.way, 'assets/car1.png', speed=20, board=self)
                 self.enemy_group.add(enemy)
+                print(self.enemy_group)
 
     def add_animation(self, animation):
         self.animation_list.append(animation)
