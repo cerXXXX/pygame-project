@@ -44,7 +44,7 @@ class ArtilleryStrike(SuperEvent):
         if time.time() - self.start_time > 4.9375:
             for i in self.points:
                 i.kill()
-                self.board.animation_list.append(Animation(self.board, i.rect.center, 'explosion', 4, 0.25 / 4,
+                self.board.animation_list.append(Animation(self.board, i.rect.center, 'assets/explosion', 4, 0.25 / 4,
                                                            resize_to=(2 * self.radius, 2 * self.radius)))
         for i in self.points:
             i.update(screen)
@@ -56,7 +56,7 @@ class ArtilleryCircle(pygame.sprite.Sprite):
         super().__init__()
         self.radius = radius
         self.pos = pos
-        self.image = pygame.image.load('artillerystrike1.png').convert_alpha()
+        self.image = pygame.image.load('assets/artillerystrike1.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = pos
 
@@ -88,7 +88,7 @@ class Board:
         self.selected_tower = None  # Currently selected tower
 
         self.currency = 1000  # Начальное количество монет
-        self.coin_icon = pygame.image.load('coin.png')  # Иконка монеты
+        self.coin_icon = pygame.image.load('assets/coin.png')  # Иконка монеты
         self.coin_icon = pygame.transform.scale(self.coin_icon, (30, 30))
 
         self.super_events = [SuperEvent(0.1, self, 'ArtilleryStrike'),
@@ -299,7 +299,7 @@ class Board:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 level_data = self.level_manager.generate_level(self.level)
-                enemy = Car(level_data.way[0], 'car1.png', level_data.way, speed=1, board=self)
+                enemy = Car(level_data.way[0], 'assets/car1.png', level_data.way, speed=1, board=self)
                 self.enemy_group.add(enemy)
 
     def add_animation(self, animation):
@@ -522,7 +522,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.health <= 0:
             self.kill()  # Удаляет врага, если здоровье <= 0
             self.board.currency += self.reward
-            self.board.add_animation(Animation(self.board, self.rect.center, 'explosion', 4, 0.25 / 4))
+            self.board.add_animation(Animation(self.board, self.rect.center, 'assets/explosion', 4, 0.25 / 4))
 
     def get_cell(self):
         """Возвращает координаты текущей клетки"""
@@ -630,7 +630,7 @@ class Menu:
 towers_data = [
     {
         'name': 'Cannon Tower',
-        'icon': 'tower1.png',
+        'icon': 'assets/tower1.png',
         'rate_of_fire': 2,
         'damage': 10,
         'visibility_zone': 200,
@@ -638,7 +638,7 @@ towers_data = [
     },
     {
         'name': 'Archer Tower',
-        'icon': 'tower2.png',
+        'icon': 'assets/tower2.png',
         'rate_of_fire': 5,
         'damage': 2,
         'visibility_zone': 300,
@@ -646,7 +646,7 @@ towers_data = [
     },
     {
         'name': 'Wtf is this tower',
-        'icon': 'tower1.png',
+        'icon': 'assets/tower1.png',
         'rate_of_fire': 25,
         'damage': 0.2,
         'visibility_zone': 500,
