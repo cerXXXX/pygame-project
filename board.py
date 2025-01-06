@@ -142,7 +142,6 @@ class Board:
         for i in self.animation_list:
             i.update(screen)
 
-        # TODO: фильтр на изображение
         if self.filter:
             s = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height)) # the size of your rect
             s.set_alpha(self.filter[-1])  # alpha level
