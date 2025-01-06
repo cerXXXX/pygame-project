@@ -52,6 +52,8 @@ class Board:
 
         self.game_state = True
 
+        self.filter = None
+
     def set_super_events(self, events: list[SuperEvent]):
         self.super_events = events
         self.super_events.append(SuperEvent(100, self, 'pass', 10))
@@ -125,6 +127,10 @@ class Board:
                 if super_event.text == 'ArtilleryStrike':
                     self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
+                elif super_event.text == 'Freeze':
+                    print('start_freeze_event')
+                    self.curr_super_event = FreezeEvent(frequency=super_event.frequency, board=self)
+                    self.curr_super_event.start_time = time.time()
 
         if self.curr_super_event:
             self.curr_super_event.update(screen)
@@ -135,6 +141,13 @@ class Board:
 
         for i in self.animation_list:
             i.update(screen)
+
+        # TODO: фильтр на изображение
+        if self.filter:
+            s = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height)) # the size of your rect
+            s.set_alpha(self.filter[-1])  # alpha level
+            s.fill(self.filter[:-1])  # this fills the entire surface
+            screen.blit(s, (0, 0))
 
     def render_interface(self, screen):
         """Отрисовка монет и меню поверх всех элементов."""

@@ -72,3 +72,19 @@ class NothingEvent(SuperEvent):
 
     def update(self, screen):
         pass
+
+
+class FreezeEvent(SuperEvent):
+    def __init__(self, board, text='Freeze', frequency=0.1, duration=5):
+        super().__init__(frequency, board, text, duration)
+
+    def update(self, screen):
+        super().update(screen)
+        if not self.board.curr_super_event:
+            self.board.filter = None
+            for i in self.board.enemy_group.sprites():
+                i.speed = i.speed_
+            return
+        self.board.filter = (166, 220, 237, 80)
+        for i in self.board.enemy_group.sprites():
+            i.freeze(80)

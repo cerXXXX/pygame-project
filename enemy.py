@@ -29,6 +29,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.float_pos = [self.rect.centerx, self.rect.centery]
 
+        self.speed_ = speed / 40
         self.speed = speed / 40
         self.turn_speed = turn_speed
         self.original_image = pygame.image.load(image).convert_alpha()
@@ -123,6 +124,9 @@ class Enemy(pygame.sprite.Sprite):
     def get_cell(self):
         """Возвращает координаты текущей клетки"""
         return self.rect.centerx // 30, self.rect.centery // 30
+
+    def freeze(self, freeze: int):
+        self.speed *= freeze / 100
 
 
 class Tank(Enemy):

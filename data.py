@@ -101,7 +101,6 @@ background_data = {1: None,
                    9: None,
                    10: None}
 
-
 building_places_data = {1: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)],
                         2: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)],
                         3: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)],
@@ -122,4 +121,5 @@ super_events_data = {1: [],
                      7: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
                      8: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
                      9: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     10: [SuperEvent(0.1, text='ArtilleryStrike', board=None)]}
+                     10: [SuperEvent(0.1, text='ArtilleryStrike', board=None),
+                          SuperEvent(0.4, text='Freeze', board=None)]}

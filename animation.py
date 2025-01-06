@@ -23,7 +23,6 @@ class Animation(pygame.sprite.Sprite):
 
     def update(self, screen):
         if time.time() - self.prev_time > self.speed:
-            print(self.count)
             self.prev_time = time.time()
             self.count += 1
             self.image = pygame.image.load(self.image_str + str(self.count) + '.' + self.img_type).convert_alpha()
