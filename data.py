@@ -3,20 +3,24 @@ from events import *
 
 towers_data = [
     {
-        'name': 'Cannon Tower',
-        'icon': 'assets/tower1.png',
-        'rate_of_fire': 2,
-        'damage': 10,
-        'visibility_zone': 200,
-        'cost': 200  # Стоимость
+        'name': 'Cannon Tower',  # Видимое название
+        'icon': 'assets/tower1.png',  # Картинка
+        'rate_of_fire': 2,  # Выстрелов в секунду
+        'damage': 10,  # Урон
+        'visibility_zone': 200,  # Область видимости
+        'cost': 200,  # Стоимость
+        'armor_piercing': 30,  # Бронепробитие (от 0 до 100)
+        'kill_zone': 0  # Радиус поражения (если не 0, то создается BigBullet вместо Bullet)
     },
     {
         'name': 'Archer Tower',
         'icon': 'assets/tower2.png',
         'rate_of_fire': 5,
-        'damage': 2,
+        'damage': 4,
         'visibility_zone': 300,
-        'cost': 150
+        'cost': 150,
+        'armor_piercing': 0,
+        'kill_zone': 0
     },
     {
         'name': 'Wtf is this tower',
@@ -24,7 +28,29 @@ towers_data = [
         'rate_of_fire': 25,
         'damage': 0.2,
         'visibility_zone': 500,
-        'cost': 300
+        'cost': 300,
+        'armor_piercing': 0,
+        'kill_zone': 0
+    },
+    {
+        'name': 'Armor Piercing Tower',
+        'icon': 'assets/tower1.png',
+        'rate_of_fire': 1,
+        'damage': 50,
+        'visibility_zone': 200,
+        'cost': 500,
+        'armor_piercing': 100,
+        'kill_zone': 0
+    },
+    {
+        'name': 'РПГ',
+        'icon': 'assets/tower1.png',
+        'rate_of_fire': 1,
+        'damage': 50,
+        'visibility_zone': 200,
+        'cost': 500,
+        'armor_piercing': 100,
+        'kill_zone': 20
     }
 ]
 
@@ -79,8 +105,8 @@ ways_data = {1: [(0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5),
                   (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (12, 17), (13, 17),
                   (14, 17), (15, 17), (16, 17), (17, 17), (18, 17), (19, 17)]}
 
-waves_data = {1: [[Car], [Car, Car, Car], [Tank, Car]],
-              2: [],
+waves_data = {1: [[Tank, Car], [Tank], [Tank], [Tank]],
+              2: [[Car], [Car, Car, Car], [Tank, Car]],
               3: [],
               4: [],
               5: [],

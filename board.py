@@ -128,7 +128,7 @@ class Board:
                     self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
                 elif super_event.text == 'Freeze':
-                    print('start_freeze_event')
+                    # print('start_freeze_event')
                     self.curr_super_event = FreezeEvent(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
 
@@ -143,7 +143,7 @@ class Board:
             i.update(screen)
 
         if self.filter:
-            s = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height)) # the size of your rect
+            s = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height))  # the size of your rect
             s.set_alpha(self.filter[-1])  # alpha level
             s.fill(self.filter[:-1])  # this fills the entire surface
             screen.blit(s, (0, 0))
@@ -259,7 +259,8 @@ class Board:
             return
         self.currency -= tower_data['cost']  # Списываем стоимость башни
         tower = Tower(self.selected_building_place[:2], tower_data['icon'], tower_data['rate_of_fire'],
-                      tower_data['damage'], tower_data['visibility_zone'], tower_data['cost'])
+                      tower_data['damage'], tower_data['visibility_zone'], tower_data['cost'],
+                      tower_data['armor_piercing'], kill_zone=tower_data['kill_zone'], board=self)
         self.selected_building_place[2] = tower  # Mark as occupied
         self.towers.append(tower)
         self.towers_Group.add(tower)
@@ -270,7 +271,7 @@ class Board:
                 level_data = self.level_manager.generate_level(self.level)
                 enemy = Car(level_data.way[0], level_data.way, 'assets/car1.png', speed=20, board=self)
                 self.enemy_group.add(enemy)
-                print(self.enemy_group)
+                # print(self.enemy_group)
 
     def add_animation(self, animation):
         self.animation_list.append(animation)

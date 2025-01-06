@@ -5,7 +5,7 @@ from animation import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos, image, way, speed, turn_speed, max_health=100, reward=50, board=None):
+    def __init__(self, pos, image, way, speed, turn_speed, max_health=100, reward=50, board=None, armor=0):
         super().__init__()
         self.image_path = image
         self.image = pygame.image.load(image).convert_alpha()
@@ -39,6 +39,10 @@ class Enemy(pygame.sprite.Sprite):
         self.target_angle = 0
         self.current_index = 0
         self.rotation_threshold = 5
+
+        self.armor = armor
+
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, screen):
         if self.turning:
@@ -113,8 +117,16 @@ class Enemy(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, bar_width, bar_height))  # Красный фон
         pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, fill_width, bar_height))  # Зеленый прогресс
 
-    def take_damage(self, damage):
+    def take_damage(self, damage, armor_piercing):
         """Наносит урон врагу"""
+        # print(self.armor, armor_piercing)
+        damage_k = self.armor - armor_piercing
+        if damage_k <= 0:
+            # print('k <= 0')
+            damage = damage
+        else:
+            damage = damage * (1 - damage_k / 100)
+        print(damage, damage_k)
         self.health -= damage
         if self.health <= 0:
             self.kill()  # Удаляет врага, если здоровье <= 0
@@ -130,12 +142,12 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Tank(Enemy):
-    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None):
-        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board)  # Медленный поворот
+    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None, armor=100):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, armor=armor)
         self.name = 'Tank'
 
 
 class Car(Enemy):
-    def __init__(self, pos, way, image='assets/car1.png', speed=30, turn_speed=3, board=None):
-        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50)  # Быстрый поворот
+    def __init__(self, pos, way, image='assets/car1.png', speed=16, turn_speed=3, board=None, armor=20):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor)
         self.name = 'Car'

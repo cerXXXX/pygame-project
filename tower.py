@@ -5,7 +5,8 @@ from bullet import *
 
 
 class Tower(pygame.sprite.Sprite):
-    def __init__(self, pos, image, rate_of_fire=2, damage=5, visibility_zone=200, cost=100):
+    def __init__(self, pos, image, rate_of_fire=2, damage=5, visibility_zone=200, cost=100, armor_piercing=0,
+                 kill_zone=None, board=None):
         super().__init__()
         self.visibility_zone = visibility_zone
         self.damage = damage
@@ -22,6 +23,11 @@ class Tower(pygame.sprite.Sprite):
         self.last_shot_time = 0
         self.bullets = pygame.sprite.Group()
         self.cost = cost
+        self.armor_piercing = armor_piercing
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.board = board
+        self.kill_zone = kill_zone
 
     def update(self, screen, enemies):
         # Target logic
@@ -67,5 +73,10 @@ class Tower(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def shoot(self):
-        bullet = Bullet(self.rect.center, self.target, self.damage)
+        if self.kill_zone:
+            bullet = BigBullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing,
+                               board=self.board, kill_radius=self.kill_zone)
+        else:
+            bullet = Bullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing)
+        # (self.armor_piercing)
         self.bullets.add(bullet)
