@@ -1,9 +1,12 @@
+from copy import deepcopy
+
 import pygame
 from events import *
 import time
 import random
 from tower import *
 from enemy import *
+from announcement import *
 
 
 class Board:
@@ -48,11 +51,18 @@ class Board:
 
         self.animation_list = []
 
-        self.waves = waves
+        self.waves = deepcopy(waves)
+        self.cur_wave = []
+        self.time_between_enemies_in_wave = 0.5
+        self.last_enemy_spawn_time = 0
+        self.time_between_waves = 5
+        self.last_wave_time = time.time()
 
         self.game_state = True
 
         self.filter = None
+
+        self.announcements = []
 
     def set_super_events(self, events: list[SuperEvent]):
         self.super_events = events
@@ -69,12 +79,30 @@ class Board:
     def render(self, screen):
         if not self.game_state:
             return
-        if not self.enemy_group.sprites():
+
+        if self.announcements:
+            for announcement in self.announcements:
+                announcement.render(screen)
+            return
+
+        if self.cur_wave:
+            if time.time() - self.last_enemy_spawn_time > self.time_between_enemies_in_wave:
+                enemy = self.cur_wave.pop(0)
+                entity = enemy(pos=self.way[0], way=self.way, board=self)
+                self.enemy_group.add(entity)
+
+                self.last_enemy_spawn_time = time.time()
+        elif not self.enemy_group.sprites():
             if self.waves:
-                wave = self.waves.pop(0)
-                for enemy in wave:
+                if (time.time() - self.last_enemy_spawn_time > self.time_between_enemies_in_wave and
+                        time.time() - self.last_wave_time > self.time_between_waves):
+                    self.last_wave_time = time.time()
+                    self.cur_wave = self.waves.pop(0)
+                    enemy = self.cur_wave.pop(0)
                     entity = enemy(pos=self.way[0], way=self.way, board=self)
                     self.enemy_group.add(entity)
+
+                    self.last_enemy_spawn_time = time.time()
             else:
                 self.game_state = False
                 return
@@ -125,10 +153,12 @@ class Board:
                 self.max_num_super_events -= 1
 
                 if super_event.text == 'ArtilleryStrike':
+                    self.announcements.append(Announcement('Артиллерийский удар!', board=self))
                     self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
                 elif super_event.text == 'Freeze':
                     # print('start_freeze_event')
+                    self.announcements.append(Announcement('Заморозка!', board=self))
                     self.curr_super_event = FreezeEvent(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
 
@@ -216,16 +246,16 @@ class Board:
             button_rect = pygame.Rect(self.menu_position[0],
                                       self.menu_position[1] + index * (button_height + 5),
                                       button_width, button_height)
-            self.menu_buttons.append((button_rect, tower_data))
+            self.menu_buttons.append((button_rect, tower_data, tower_data['cost']))
 
             # Добавляем текст к кнопке
             tower_data['menu_text'] = text  # Сохраняем текст для последующего рендера
 
     def render_menu(self, screen):
         font = pygame.font.Font(None, 24)
-        for button_rect, tower_data in self.menu_buttons:
+        for button_rect, tower_data, tower_price in self.menu_buttons:
             # Рисуем кнопку
-            pygame.draw.rect(screen, 'grey', button_rect)
+            pygame.draw.rect(screen, 'grey' if tower_price <= self.currency else 'gray34', button_rect)
             pygame.draw.rect(screen, 'black', button_rect, 2)
 
             # Загружаем и отображаем иконку башни
@@ -238,9 +268,11 @@ class Board:
             screen.blit(text, (button_rect.x + 40, button_rect.y + 10))
 
     def handle_menu_click(self, mouse_pos):
+        if self.announcements:
+            return
         """Обрабатывает клик внутри меню или закрывает меню при клике вне его."""
         menu_closed = True
-        for button_rect, tower_data in self.menu_buttons:
+        for button_rect, tower_data, tower_price in self.menu_buttons:
             if button_rect.collidepoint(mouse_pos):
                 self.build_tower(tower_data)
                 menu_closed = True
@@ -255,7 +287,6 @@ class Board:
         if self.selected_building_place is None:
             return
         if self.currency < tower_data['cost']:  # Проверка наличия монет
-            print("Not enough currency!")
             return
         self.currency -= tower_data['cost']  # Списываем стоимость башни
         tower = Tower(self.selected_building_place[:2], tower_data['icon'], tower_data['rate_of_fire'],
@@ -272,6 +303,10 @@ class Board:
                 enemy = Car(level_data.way[0], level_data.way, 'assets/car1.png', speed=20, board=self)
                 self.enemy_group.add(enemy)
                 # print(self.enemy_group)
+
+        if self.announcements:
+            for announcement in self.announcements:
+                announcement.handle_event(event)
 
     def add_animation(self, animation):
         self.animation_list.append(animation)

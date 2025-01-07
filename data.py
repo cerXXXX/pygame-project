@@ -105,7 +105,7 @@ ways_data = {1: [(0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5),
                   (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (12, 17), (13, 17),
                   (14, 17), (15, 17), (16, 17), (17, 17), (18, 17), (19, 17)]}
 
-waves_data = {1: [[Tank, Car], [Tank], [Tank], [Tank]],
+waves_data = {1: [[Tank, Tank, Tank, Tank, Tank, Car, Car, Car, Car, Car], [Tank, Car, Car], [Tank, Car, Car], [Tank, Car, Car]],
               2: [[Car], [Car, Car, Car], [Tank, Car]],
               3: [],
               4: [],
@@ -138,7 +138,7 @@ building_places_data = {1: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (1
                         9: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)],
                         10: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)]}
 
-super_events_data = {1: [],
+super_events_data = {1: [SuperEvent(1, text='ArtilleryStrike', board=None)],
                      2: [],
                      3: [],
                      4: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],

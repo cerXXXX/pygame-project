@@ -24,15 +24,6 @@ while is_running:
         if event.type == pygame.QUIT:
             is_running = False
 
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == hello_button:
-                print('Hello World!')
-
-        manager.process_events(event)
-
-    manager.update(time_delta)
-
-    window_surface.blit(background, (0, 0))
-    manager.draw_ui(window_surface)
+    pygame.draw.circle(window_surface, (0, 255, 255), (350, 275), 50)
 
     pygame.display.update()

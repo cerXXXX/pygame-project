@@ -2,6 +2,7 @@ import pygame
 from data import *
 from board import *
 from level import *
+from announcement import *
 
 
 class Game:
@@ -43,7 +44,7 @@ class Game:
 
     def start_level(self, level_number):
         if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
-            print(f"Уровень {level_number} недоступен.")
+            self.level_select_menu.announcements.append(Announcement(f"Уровень {level_number} не доступен", (300, 100), master=self.level_select_menu))
             return
         self.level_manager.current_level = level_number
         level = self.level_manager.generate_level(level_number)
@@ -89,8 +90,8 @@ class Game:
                 self.board.handle_event(event)
                 if not self.board.game_state:
                     self.state = GameState.LEVEL_END
-
-            self.screen.fill('lightgreen')
+            if not self.board or not self.board.announcements:
+                self.screen.fill('lightgreen')
             if self.state == GameState.MAIN_MENU:
                 self.main_menu.render()
             elif self.state == GameState.PAUSE:
@@ -119,6 +120,7 @@ class LevelManager:
         self.completed_levels = set()  # Хранит номера пройденных уровней
 
     def generate_level(self, difficulty):
+        # TODO: переделать
         levels = {1: DefaultLevel(1),
                   2: DefaultLevel(2),
                   3: DefaultLevel(3),
@@ -139,10 +141,17 @@ class Menu:
         self.font = pygame.font.Font(None, 48)
         self.buttons = []
 
+        self.announcements = []
+
     def add_button(self, text, position, action):
         self.buttons.append({"text": text, "position": position, "action": action})
 
     def render(self):
+        if self.announcements:
+            for announcement in self.announcements:
+                announcement.render(self.screen)
+            return
+
         for button in self.buttons:
             text = self.font.render(button["text"], True, 'white')
             rect = text.get_rect(center=button["position"])
@@ -158,3 +167,7 @@ class Menu:
                     button["action"](int(button["text"].split()[1]))
                     return
                 button["action"]()
+
+        if self.announcements:
+            for announcement in self.announcements:
+                announcement.mouse_click(mouse_pos)

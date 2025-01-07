@@ -42,6 +42,10 @@ class ArtilleryStrike(SuperEvent):
                         self.board.towers.remove(j)
                         j.kill()
 
+                for j in self.board.enemy_group.sprites():
+                    if pygame.sprite.collide_mask(j, i):
+                        j.take_damage(self.damage, 0)
+
         if time.time() - self.start_time > 4.9375:
             for i in self.points:
                 i.kill()
@@ -61,6 +65,9 @@ class ArtilleryCircle(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (int(self.radius * 2), int(self.radius * 2)))
         self.rect = self.image.get_rect()
         self.rect.center = pos
+        mask_surf = pygame.Surface((self.radius * 2, self.radius * 2))
+        pygame.draw.circle(mask_surf, (255, 255, 255), (self.radius, self.radius), self.radius)
+        self.mask = pygame.mask.from_surface(mask_surf)
 
     def update(self, screen):
         screen.blit(self.image, self.rect)
