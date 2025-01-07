@@ -153,12 +153,12 @@ class Board:
                 self.max_num_super_events -= 1
 
                 if super_event.text == 'ArtilleryStrike':
-                    self.announcements.append(Announcement('Артиллерийский удар!', board=self))
+                    self.announcements.append(Announcement('Артиллерийский удар!', master=self))
                     self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
                 elif super_event.text == 'Freeze':
                     # print('start_freeze_event')
-                    self.announcements.append(Announcement('Заморозка!', board=self))
+                    self.announcements.append(Announcement('Заморозка!', master=self))
                     self.curr_super_event = FreezeEvent(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
 
