@@ -30,7 +30,7 @@ def render_multiline_text(surface, text, font, color, rect):
 
 
 class Announcement:
-    def __init__(self, content, size=(300, 300), font_size=20, position='center', background_image=None, master=None):
+    def __init__(self, content=None, size=(300, 300), font_size=20, position='center', background_image=None, master=None, render_func=None):
         self.content = content
         self.size = size
         self.font_size = font_size
@@ -41,9 +41,15 @@ class Announcement:
         self.master = master
         self.is_visible = True
         self.button_rect = None
+        self.render_func = render_func  # Новый параметр
 
     def render(self, screen):
         if not self.is_visible:
+            return
+
+        if self.render_func:
+            # Используем пользовательскую функцию для рендера
+            self.render_func(screen)
             return
 
         if self.background_image:
@@ -100,46 +106,17 @@ class Announcement:
         )
 
     def handle_event(self, event):
-        if not self.button_rect:
-            return
-
-        if not self.is_visible:
+        if not self.is_visible or not self.button_rect:
             return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # ЛКМ
             if self.button_rect.collidepoint(event.pos):
-                self.master.announcements.remove(self)
-    
+                if self.master and self.master.announcements:
+                    self.master.announcements.remove(self)
+
     def mouse_click(self, mouse_pos):
-        if self.button_rect.collidepoint(mouse_pos):
-            self.master.announcements.remove(self)
+        if self.button_rect and self.button_rect.collidepoint(mouse_pos):
+            if self.master and self.master.announcements:
+                self.master.announcements.remove(self)
 
 
-"""
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption('Announcement with Button')
-
-# Загрузка изображения фона
-background_image = pygame.image.load('background_image.jpg')
-announcement = Announcement('This is a very long text that needs to be wrapped across multiple lines to fit within the bounds of the notification.',
-                            position='center', screen=screen, background_image=background_image)
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        # Обработка событий для уведомления
-        announcement.handle_event(event)
-
-    screen.fill((0, 0, 0))
-
-    # Рендер уведомления
-    announcement.render()
-
-    pygame.display.flip()
-
-pygame.quit()
-"""

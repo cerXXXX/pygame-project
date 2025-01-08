@@ -66,6 +66,8 @@ class Enemy(pygame.sprite.Sprite):
                               self.get_cell()[1] * 30, 30, 30))"""
         # Если достигли конца пути, останавливаемся
         if self.current_index >= len(self.pixels_way) - 1:
+            self.board.enemy_on_end_of_way()
+            self.kill()
             return
 
         # Получить следующую точку пути
@@ -127,6 +129,7 @@ class Enemy(pygame.sprite.Sprite):
             damage = damage * (1 - damage_k / 100)
         self.health -= damage
         if self.health <= 0:
+            self.board.score += self.reward
             self.kill()  # Удаляет врага, если здоровье <= 0
             self.board.currency += self.reward
             self.board.add_animation(Animation(self.board, self.rect.center, 'assets/explosion', 4, 0.25 / 4))
@@ -140,12 +143,13 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Tank(Enemy):
-    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None, armor=100):
-        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, armor=armor)
+    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None, armor=100, reward=250):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, armor=armor, reward=reward)
         self.name = 'Tank'
 
 
 class Car(Enemy):
-    def __init__(self, pos, way, image='assets/car1.png', speed=30, turn_speed=3, board=None, armor=20):
-        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor)
+    def __init__(self, pos, way, image='assets/car1.png', speed=30, turn_speed=3, board=None, armor=20, reward=100):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
+                         reward=reward)
         self.name = 'Car'

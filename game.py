@@ -18,6 +18,11 @@ class Game:
         self.main_menu = Menu(self.screen)
         self.pause_menu = Menu(self.screen)
         self.level_select_menu = Menu(self.screen)
+        self.level_end_menu = Menu(self.screen)
+
+        # Загрузка изображений сердец
+        self.heart_image = pygame.image.load('assets/heart.png')
+        self.grey_heart_image = pygame.image.load('assets/grey_heart.png')
 
         # Настройка меню
         self.setup_menus()
@@ -34,9 +39,15 @@ class Game:
 
         # Меню выбора уровня
         for i in range(1, 11):
-            x = 300  # + ((i - 1) % 5) * 100
+            x = 300
             y = 50 + (i - 1) * 50
-            self.level_select_menu.add_button(f"Уровень {i}", (x, y), lambda x: self.start_level(x))
+            if i <= max(self.level_manager.completed_levels, default=0) + 1:
+                self.level_select_menu.add_button(f"Уровень {i}", (x, y), lambda x=i: self.start_level(x), color='gray')
+            else:
+                self.level_select_menu.add_button(f"Уровень {i}", (x, y),lambda x=i: self.start_level(x), color='black')
+
+        # Меню завершения уровня
+        self.level_end_menu.add_button("Выйти в меню", (300, 400), self.return_to_main_menu)
 
     def start_game(self):
         self.state = GameState.GAME
@@ -44,7 +55,8 @@ class Game:
 
     def start_level(self, level_number):
         if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
-            self.level_select_menu.announcements.append(Announcement(f"Уровень {level_number} не доступен", (300, 100), master=self.level_select_menu))
+            self.level_select_menu.announcements.append(
+                Announcement(f"Уровень {level_number} не доступен", (300, 100), master=self.level_select_menu))
             return
         self.level_manager.current_level = level_number
         level = self.level_manager.generate_level(level_number)
@@ -69,6 +81,56 @@ class Game:
     def exit_game(self):
         self.running = False
 
+    def end_level(self):
+        # Переход в меню завершения уровня
+        self.state = GameState.LEVEL_END
+        self.level_end_menu.announcements.clear()
+
+        if self.board.win:
+            self.level_manager.completed_levels.add(self.level_manager.current_level)
+            result_text = "Победа!"
+        else:
+            result_text = "Поражение!"
+
+        # Создание уведомления с результатами уровня
+        def render_results(surface):
+            font = pygame.font.Font(None, 48)
+            y_offset = 100
+
+            # Результат (победа/поражение)
+            result_surface = font.render(f"Результат: {result_text}", True, 'white')
+            surface.blit(result_surface, result_surface.get_rect(center=(300, y_offset)))
+
+            # Счет
+            y_offset += 50
+            score_surface = font.render(f"Счет: {self.board.score}", True, 'white')
+            surface.blit(score_surface, score_surface.get_rect(center=(300, y_offset)))
+
+            # Время
+            y_offset += 50
+            time_surface = font.render(f"Время: {self.board.level_time:.2f} сек.", True, 'white')
+            surface.blit(time_surface, time_surface.get_rect(center=(300, y_offset)))
+
+            # Здоровье (сердечки)
+            y_offset += 50
+            for i in range(3):
+                x_offset = 240 + i * 40
+                if i < self.board.health:
+                    surface.blit(self.heart_image, (x_offset, y_offset))
+                else:
+                    surface.blit(self.grey_heart_image, (x_offset, y_offset))
+
+            # Рендер кнопки "Выйти в меню"
+            button_font = pygame.font.Font(None, 36)
+            button_text = button_font.render("Выйти в меню", True, 'white')
+            button_rect = button_text.get_rect(center=(300, y_offset + 100))
+            pygame.draw.rect(surface, 'black', button_rect.inflate(20, 10))
+            surface.blit(button_text, button_rect)
+            self.level_end_menu.add_button("Выйти в меню", (300, y_offset + 100), self.return_to_main_menu)
+
+        self.level_end_menu.announcements.append(
+            Announcement(render_func=render_results, position=(0, 0), master=self.level_end_menu))
+
     def game_loop(self):
         while self.running:
             for event in pygame.event.get():
@@ -81,23 +143,30 @@ class Game:
                         self.pause_menu.handle_click(event.pos)
                     elif self.state == GameState.LEVEL_SELECT:
                         self.level_select_menu.handle_click(event.pos)
+                    elif self.state == GameState.LEVEL_END:
+                        self.level_end_menu.handle_click(event.pos)
                     elif self.state == GameState.GAME:
                         self.board.get_click(event.pos)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p and self.state == GameState.GAME:
                         self.toggle_pause()
-            if self.board:
+
+            if self.board and self.state == GameState.GAME:
                 self.board.handle_event(event)
                 if not self.board.game_state:
-                    self.state = GameState.LEVEL_END
+                    self.end_level()
+
             if not self.board or not self.board.announcements:
                 self.screen.fill('lightgreen')
+
             if self.state == GameState.MAIN_MENU:
                 self.main_menu.render()
             elif self.state == GameState.PAUSE:
                 self.pause_menu.render()
             elif self.state == GameState.LEVEL_SELECT:
                 self.level_select_menu.render()
+            elif self.state == GameState.LEVEL_END:
+                self.level_end_menu.render()
             elif self.state == GameState.GAME:
                 self.board.render(self.screen)
                 self.board.render_interface(self.screen)
@@ -117,10 +186,9 @@ class GameState:
 class LevelManager:
     def __init__(self):
         self.current_level = 1
-        self.completed_levels = set()  # Хранит номера пройденных уровней
+        self.completed_levels = set()
 
     def generate_level(self, difficulty):
-        # TODO: переделать
         levels = {1: DefaultLevel(1),
                   2: DefaultLevel(2),
                   3: DefaultLevel(3),
@@ -131,7 +199,6 @@ class LevelManager:
                   8: DefaultLevel(8),
                   9: DefaultLevel(9),
                   10: DefaultLevel(10)}
-        # Генерация уровня по сложности
         return levels[difficulty]
 
 
@@ -140,22 +207,24 @@ class Menu:
         self.screen = screen
         self.font = pygame.font.Font(None, 48)
         self.buttons = []
-
         self.announcements = []
 
-    def add_button(self, text, position, action):
-        self.buttons.append({"text": text, "position": position, "action": action})
+    def add_button(self, text, position, action, color='black'):
+        self.buttons.append({"text": text, "position": position, "action": action, "color": color})
 
     def render(self):
         if self.announcements:
             for announcement in self.announcements:
-                announcement.render(self.screen)
+                if callable(announcement.render_func):
+                    announcement.render_func(self.screen)
+                else:
+                    announcement.render(self.screen)
             return
 
         for button in self.buttons:
             text = self.font.render(button["text"], True, 'white')
             rect = text.get_rect(center=button["position"])
-            pygame.draw.rect(self.screen, 'black', rect.inflate(20, 10))
+            pygame.draw.rect(self.screen, button["color"], rect.inflate(20, 10))
             self.screen.blit(text, rect)
 
     def handle_click(self, mouse_pos):
@@ -163,9 +232,6 @@ class Menu:
             text = self.font.render(button["text"], True, 'white')
             rect = text.get_rect(center=button["position"])
             if rect.collidepoint(mouse_pos):
-                if button["text"].split()[0] == 'Уровень' and len(button["text"].split()) == 2:
-                    button["action"](int(button["text"].split()[1]))
-                    return
                 button["action"]()
 
         if self.announcements:

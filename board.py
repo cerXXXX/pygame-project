@@ -1,5 +1,4 @@
 from copy import deepcopy
-
 import pygame
 from events import *
 import time
@@ -59,10 +58,20 @@ class Board:
         self.last_wave_time = time.time()
 
         self.game_state = True
+        self.win = False
+        self.health = 3
+
+        self.score = 0
+        self.level_start_time = time.time()
+        self.level_time = 0
 
         self.filter = None
 
         self.announcements = []
+
+        # Загрузка изображений сердец
+        self.heart_image = pygame.image.load('assets/heart.png')
+        self.grey_heart_image = pygame.image.load('assets/grey_heart.png')
 
     def set_super_events(self, events: list[SuperEvent]):
         self.super_events = events
@@ -105,6 +114,8 @@ class Board:
                     self.last_enemy_spawn_time = time.time()
             else:
                 self.game_state = False
+                self.win = True
+                self.level_time = time.time() - self.level_start_time
                 return
         # Отрисовка сетки игрового поля
         for y in range(self.height):
@@ -172,11 +183,24 @@ class Board:
         for i in self.animation_list:
             i.update(screen)
 
+        # Отображение оставшихся сердечек в правом верхнем углу
+        self.render_health(screen)
+
         if self.filter:
             s = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height))  # the size of your rect
             s.set_alpha(self.filter[-1])  # alpha level
             s.fill(self.filter[:-1])  # this fills the entire surface
             screen.blit(s, (0, 0))
+
+    def render_health(self, screen):
+        """Отображает количество оставшихся сердечек."""
+        for i in range(3):
+            x_offset = screen.get_width() - 40 * (3 - i)
+            y_offset = 10
+            if i < self.health:
+                screen.blit(self.heart_image, (x_offset, y_offset))
+            else:
+                screen.blit(self.grey_heart_image, (x_offset, y_offset))
 
     def render_interface(self, screen):
         """Отрисовка монет и меню поверх всех элементов."""
@@ -310,3 +334,11 @@ class Board:
 
     def add_animation(self, animation):
         self.animation_list.append(animation)
+
+    def enemy_on_end_of_way(self):
+        self.health -= 1
+
+        if self.health <= 0:
+            self.game_state = False
+            self.win = False
+            self.level_time = time.time() - self.level_start_time
