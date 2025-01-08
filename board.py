@@ -72,6 +72,9 @@ class Board:
         # Загрузка изображений сердец
         self.heart_image = pygame.image.load('assets/heart.png')
         self.grey_heart_image = pygame.image.load('assets/grey_heart.png')
+        self.road_img = pygame.image.load('assets/road1.png')
+        self.ground_img = pygame.image.load('assets/ground.png')
+        self.add_tower_img = pygame.image.load('assets/add_tower2.png')
 
     def set_super_events(self, events: list[SuperEvent]):
         self.super_events = events
@@ -123,16 +126,19 @@ class Board:
                 pygame.draw.rect(screen, 'white',
                                  (x * self.cell_size + self.left,
                                   y * self.cell_size + self.top, self.cell_size, self.cell_size), 1)
+                screen.blit(self.ground_img, (x * self.cell_size + self.left, y * self.cell_size + self.top))
 
         # Отрисовка пути и зон строительства
         for cell in self.way:
-            pygame.draw.rect(screen, 'antiquewhite3',
+            """pygame.draw.rect(screen, 'antiquewhite3',
                              (cell[0] * self.cell_size + self.left,
-                              cell[1] * self.cell_size + self.top, self.cell_size, self.cell_size))
+                              cell[1] * self.cell_size + self.top, self.cell_size, self.cell_size))"""
+            screen.blit(self.road_img, (cell[0] * self.cell_size + self.left, cell[1] * self.cell_size + self.top))
 
         for cell in self.building_places:
             if not cell[2]:
-                pygame.draw.rect(screen, 'aquamarine4',
+                screen.blit(self.add_tower_img, (cell[0] * self.cell_size + self.left, cell[1] * self.cell_size + self.top))
+                """pygame.draw.rect(screen, 'aquamarine4',
                                  (cell[0] * self.cell_size + self.left,
                                   cell[1] * self.cell_size + self.top, self.cell_size, self.cell_size))
                 pygame.draw.rect(screen, 'aquamarine4',
@@ -143,7 +149,7 @@ class Board:
                                   (cell[1] + 1) * self.cell_size + self.top, self.cell_size, self.cell_size))
                 pygame.draw.rect(screen, 'aquamarine4',
                                  ((cell[0] + 1) * self.cell_size + self.left,
-                                  (cell[1] + 1) * self.cell_size + self.top, self.cell_size, self.cell_size))
+                                  (cell[1] + 1) * self.cell_size + self.top, self.cell_size, self.cell_size))"""
 
         # Отрисовка выделенного круга видимости башни
         if self.selected_tower:
