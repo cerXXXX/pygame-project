@@ -169,6 +169,7 @@ class Board:
                 self.last_super_event_time = time.time() + super_event.duration
                 self.max_num_super_events -= 1
 
+                # TODO: добавить новые события
                 if super_event.text == 'ArtilleryStrike':
                     self.announcements.append(Announcement('Артиллерийский удар!', master=self))
                     self.curr_super_event = ArtilleryStrike(frequency=super_event.frequency, board=self)

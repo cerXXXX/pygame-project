@@ -54,10 +54,10 @@ class Game:
         self.start_level(self.level_manager.current_level)
 
     def start_level(self, level_number):
-        if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
+        """if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
             self.level_select_menu.announcements.append(
                 Announcement(f"Уровень {level_number} не доступен", (300, 100), master=self.level_select_menu))
-            return
+            return"""
         self.level_manager.current_level = level_number
         level = self.level_manager.generate_level(level_number)
         self.board = Board(20, 20, 0, 0, waves=level.waves, towers_data=towers_data, level=level_number,

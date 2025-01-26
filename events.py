@@ -95,3 +95,13 @@ class FreezeEvent(SuperEvent):
         self.board.filter = (166, 220, 237, 80)
         for i in self.board.enemy_group.sprites():
             i.freeze(80)
+
+
+class Reinforcements(SuperEvent):
+    def __init__(self, board, text='Reinforcements', frequency=0.1, duration=5):
+        super().__init__(frequency, board, text, duration)
+
+
+class ChaosMode(SuperEvent):
+    def __init__(self, board, text='Chaos Mode', frequency=0.1, duration=5):
+        super().__init__(frequency, board, text, duration)

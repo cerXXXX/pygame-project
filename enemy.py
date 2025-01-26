@@ -153,3 +153,17 @@ class Car(Enemy):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
                          reward=reward)
         self.name = 'Car'
+
+
+class FastCar(Enemy):
+    def __init__(self, pos, way, image='assets/car2.png', speed=45, turn_speed=4, board=None, armor=20, reward=120):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
+                         reward=reward)
+        self.name = 'FastCar'
+
+
+class HeavyTank(Enemy):
+    def __init__(self, pos, way, image='assets/tank2.png', speed=10, turn_speed=1, board=None, armor=150, reward=300):
+        super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=130, armor=armor,
+                         reward=reward)
+        self.name = 'HeavyTank'

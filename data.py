@@ -105,16 +105,27 @@ ways_data = {1: [(-1, 5), (0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5)
                   (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (12, 17), (13, 17),
                   (14, 17), (15, 17), (16, 17), (17, 17), (18, 17), (19, 17)]}
 
-waves_data = {1: [[Car, Car, Car]],
-              2: [[Car], [Car, Car, Car], [Tank, Car]],
-              3: [],
-              4: [],
-              5: [],
-              6: [],
-              7: [],
-              8: [],
-              9: [],
-              10: []}
+waves_data = {
+    1: [[Car, Car, Car]],  # 1 волна
+    2: [[Car, Car], [Car, Car, Car], [Tank, Car]],  # 3 волны
+    3: [[Car, Car, FastCar], [Car, FastCar, Tank], [Tank, Tank, Car, FastCar]],  # 3 волны
+    4: [[FastCar, FastCar, FastCar], [Car, Car, Tank, Tank], [Tank, HeavyTank], [FastCar, Tank, HeavyTank]],  # 4 волны
+    5: [[Car, Car, FastCar], [FastCar, FastCar, Tank], [Tank, HeavyTank, HeavyTank],
+        [Tank, HeavyTank, HeavyTank, FastCar]],  # 4 волны
+    6: [[FastCar, FastCar, FastCar, FastCar], [Car, Tank, HeavyTank], [HeavyTank, HeavyTank, HeavyTank, FastCar],
+        [FastCar, Tank, Tank], [FastCar, FastCar, Tank]],  # 5 волн
+    7: [[Tank, Tank, Tank, HeavyTank], [FastCar, HeavyTank, HeavyTank], [Tank, HeavyTank, HeavyTank, FastCar],
+        [FastCar, FastCar, HeavyTank, HeavyTank], [Tank, Tank, Tank, FastCar]],  # 5 волн
+    8: [[FastCar, FastCar, Tank, Tank], [Tank, HeavyTank, HeavyTank, FastCar],
+        [HeavyTank, HeavyTank, HeavyTank, HeavyTank], [FastCar, FastCar, Tank, Tank],
+        [Tank, HeavyTank, HeavyTank, HeavyTank]],  # 5 волн
+    9: [[Car, Car, Tank, Tank, Tank], [FastCar, FastCar, Tank, HeavyTank], [HeavyTank, HeavyTank, HeavyTank, FastCar],
+        [Tank, HeavyTank, Tank, HeavyTank], [FastCar, FastCar, FastCar, Tank], [HeavyTank, HeavyTank, Tank, Tank]],
+    # 6 волн
+    10: [[Tank, Tank, Tank, HeavyTank, HeavyTank], [FastCar, FastCar, Tank, HeavyTank],
+         [HeavyTank, HeavyTank, HeavyTank, HeavyTank, Tank], [FastCar, FastCar, Tank, HeavyTank],
+         [Tank, HeavyTank, HeavyTank, HeavyTank, FastCar], [HeavyTank, HeavyTank, HeavyTank, HeavyTank, Tank]]  # 6 волн
+}
 
 background_data = {1: None,
                    2: None,
@@ -138,14 +149,25 @@ building_places_data = {1: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (1
                         9: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)],
                         10: [(3, 2), (2, 7), (6, 7), (8, 2), (12, 4), (14, 9), (17, 4), (8, 10), (2, 14), (9, 14)]}
 
-super_events_data = {1: [],
-                     2: [],
-                     3: [],
-                     4: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     5: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     6: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     7: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     8: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     9: [SuperEvent(0.1, text='ArtilleryStrike', board=None)],
-                     10: [SuperEvent(0.1, text='ArtilleryStrike', board=None),
-                          SuperEvent(0.4, text='Freeze', board=None)]}
+super_events_data = {
+    1: [],  # Суперсобытий нет на первом уровне
+    2: [],  # На втором уровне тоже нет событий
+    3: [SuperEvent(0.01, text='ArtilleryStrike', board=None)],  # Частота удвоена (было 0.005)
+    4: [SuperEvent(0.04, text='ArtilleryStrike', board=None)],  # Было 0.02
+    5: [SuperEvent(0.06, text='ArtilleryStrike', board=None)],  # Было 0.03
+    6: [SuperEvent(0.1, text='ArtilleryStrike', board=None),  # Было 0.05
+        SuperEvent(0.04, text='Reinforcements', board=None)],
+    7: [SuperEvent(0.2, text='ArtilleryStrike', board=None),  # Было 0.1
+        SuperEvent(0.1, text='Freeze', board=None)],  # Было 0.05
+    8: [SuperEvent(0.3, text='ArtilleryStrike', board=None),  # Было 0.15
+        SuperEvent(0.16, text='Freeze', board=None),  # Было 0.08
+        SuperEvent(0.04, text='Reinforcements', board=None)],
+    9: [SuperEvent(0.4, text='ArtilleryStrike', board=None),  # Было 0.2
+        SuperEvent(0.2, text='Freeze', board=None),  # Было 0.1
+        SuperEvent(0.06, text='Reinforcements', board=None)],
+    10: [SuperEvent(0.5, text='ArtilleryStrike', board=None),  # Было 0.25
+         SuperEvent(0.3, text='Freeze', board=None),  # Было 0.15
+         SuperEvent(0.1, text='Reinforcements', board=None),
+         SuperEvent(0.05, text='ChaosMode', board=None)]
+}
+
