@@ -179,6 +179,8 @@ class Board:
                     self.announcements.append(Announcement('Заморозка!', master=self))
                     self.curr_super_event = FreezeEvent(frequency=super_event.frequency, board=self)
                     self.curr_super_event.start_time = time.time()
+                else:
+                    pass
 
         if self.curr_super_event:
             self.curr_super_event.update(screen)
