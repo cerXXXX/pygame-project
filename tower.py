@@ -73,10 +73,12 @@ class Tower(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def shoot(self):
+        quantity = 1 if self.rate_of_fire <= 2 else 2
         if self.kill_zone:
             bullet = BigBullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing,
                                board=self.board, kill_radius=self.kill_zone)
         else:
-            bullet = Bullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing)
+            bullet = Bullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing,
+                            quantity=quantity)
         # (self.armor_piercing)
         self.bullets.add(bullet)

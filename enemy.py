@@ -143,7 +143,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Tank(Enemy):
-    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None, armor=100, reward=250):
+    def __init__(self, pos, way, image='assets/tank1.png', speed=15, turn_speed=2, board=None, armor=100, reward=150):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, armor=armor, reward=reward)
         self.name = 'Tank'
 
@@ -156,14 +156,14 @@ class Car(Enemy):
 
 
 class FastCar(Enemy):
-    def __init__(self, pos, way, image='assets/car2.png', speed=45, turn_speed=4, board=None, armor=20, reward=120):
+    def __init__(self, pos, way, image='assets/car2.png', speed=45, turn_speed=4, board=None, armor=20, reward=60):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
                          reward=reward)
         self.name = 'FastCar'
 
 
 class HeavyTank(Enemy):
-    def __init__(self, pos, way, image='assets/tank2.png', speed=10, turn_speed=1, board=None, armor=150, reward=300):
+    def __init__(self, pos, way, image='assets/tank2.png', speed=10, turn_speed=1, board=None, armor=150, reward=285):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=130, armor=armor,
                          reward=reward)
         self.name = 'HeavyTank'

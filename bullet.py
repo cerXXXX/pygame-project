@@ -3,18 +3,24 @@ import math
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, start_pos, target, damage=10, speed=5, armor_piercing=0):
+    def __init__(self, start_pos, target, damage=10, speed=5, armor_piercing=0, quantity=1):
         super().__init__()
-        self.image = pygame.Surface((5, 5))  # Маленький красный прямоугольник
-        self.image.fill((255, 0, 0))
-        self.rect = self.image.get_rect()
-        self.rect.center = start_pos
         self.target = target
         self.damage = damage
         self.speed = speed
         self.start_pos = start_pos
         self.armor_piercing = armor_piercing
 
+        if quantity == 1:
+            self.original_image = pygame.Surface((6, 4), pygame.SRCALPHA)  # Прозрачный фон
+            pygame.draw.rect(self.original_image, (255, 0, 0), (0, 0, 6, 4))  # Одна пуля
+        elif quantity == 2:
+            self.original_image = pygame.Surface((6, 12), pygame.SRCALPHA)  # Прозрачный фон
+            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 0, 4, 4))  # Верхняя пуля
+            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 8, 4, 4))  # Нижняя пуля
+
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center=start_pos)
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
@@ -26,6 +32,11 @@ class Bullet(pygame.sprite.Sprite):
         dx = self.target.rect.centerx - self.rect.centerx
         dy = self.target.rect.centery - self.rect.centery
         distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        # Поворачиваем пулю к цели
+        angle = math.degrees(math.atan2(-dy, dx))  # Угол поворота (в Pygame ось Y перевернута)
+        self.image = pygame.transform.rotate(self.original_image, angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
         # Движение пули к цели
         if distance > self.speed and not pygame.sprite.collide_mask(self, self.target):
