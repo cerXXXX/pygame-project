@@ -4,7 +4,7 @@ from events import *
 towers_data = [
     {
         'name': 'Артиллерийская башня',
-        'icon': 'assets/tower1.png',
+        'icon': 'assets/tower3.png',
         'rate_of_fire': 2.0,  # Чуть медленнее стреляет
         'damage': 11,  # Снижен урон
         'visibility_zone': 220,
@@ -24,7 +24,7 @@ towers_data = [
     },
     {
         'name': 'Башня Гатлинга',
-        'icon': 'assets/tower1.png',
+        'icon': 'assets/tower10.png',
         'rate_of_fire': 35,  # Чуть снизили скорострельность
         'damage': 0.85,  # Еще меньше урона
         'visibility_zone': 450,
@@ -34,7 +34,7 @@ towers_data = [
     },
     {
         'name': 'Противотанковая башня',
-        'icon': 'assets/tower3.png',
+        'icon': 'assets/tower9.png',
         'rate_of_fire': 0.7,  # Стала еще медленнее
         'damage': 20,  # Чуть меньше урон
         'visibility_zone': 200,

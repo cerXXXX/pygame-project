@@ -8,7 +8,6 @@ class Bullet(pygame.sprite.Sprite):
         self.target = target
         self.damage = damage
         self.speed = speed
-        self.start_pos = start_pos
         self.armor_piercing = armor_piercing
 
         if quantity == 1:
@@ -16,8 +15,13 @@ class Bullet(pygame.sprite.Sprite):
             pygame.draw.rect(self.original_image, (255, 0, 0), (0, 0, 6, 4))  # Одна пуля
         elif quantity == 2:
             self.original_image = pygame.Surface((6, 12), pygame.SRCALPHA)  # Прозрачный фон
-            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 0, 4, 4))  # Верхняя пуля
-            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 8, 4, 4))  # Нижняя пуля
+            pygame.draw.rect(self.original_image, (1, 0, 4, 4), (255, 0, 0))  # Верхняя пуля
+            pygame.draw.rect(self.original_image, (1, 8, 4, 4), (255, 0, 0))  # Нижняя пуля
+        elif quantity == 3:
+            self.original_image = pygame.Surface((4, 15), pygame.SRCALPHA)  # Прозрачный фон
+            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 0, 4, 4))   # Верхняя пуля
+            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 6, 4, 4))   # Средняя пуля (сдвиг на 3 пикселя)
+            pygame.draw.rect(self.original_image, (255, 0, 0), (1, 12, 4, 4))  # Нижняя пуля
 
         self.image = self.original_image
         self.rect = self.image.get_rect(center=start_pos)
@@ -46,6 +50,7 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.center = self.target.rect.center  # Попадание в цель
             self.target.take_damage(self.damage, self.armor_piercing)  # Наносим урон
             self.kill()  # Уничтожить пулю
+
 
 
 class BigBullet(Bullet):
