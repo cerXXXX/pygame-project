@@ -6,31 +6,46 @@ def draw_rounded_rect(surface, color, rect, border_radius, width=0):
 
 
 def render_multiline_text(surface, text, font, color, rect):
-    words = text.split(' ')
+    margin_top = 5
+    margin_bottom = 5
+    available_height = rect.height - margin_top - margin_bottom
+
+    # Разбиваем текст на абзацы по символу новой строки
+    paragraphs = text.splitlines()
     lines = []
-    current_line = ''
-
-    for word in words:
-        test_line = f'{current_line} {word}'.strip()
-        if font.size(test_line)[0] > rect.width:
+    for para in paragraphs:
+        words = para.split(' ')
+        current_line = ''
+        for word in words:
+            test_line = f'{current_line} {word}'.strip()
+            if font.size(test_line)[0] > rect.width and current_line:
+                lines.append(current_line)
+                current_line = word
+            else:
+                current_line = test_line
+        if current_line:
             lines.append(current_line)
-            current_line = word
-        else:
-            current_line = test_line
-    lines.append(current_line)
 
-    total_height = len(lines) * font.size(lines[0])[1]
-    y_offset = rect.top + (rect.height - total_height) // 2
+    line_height = font.get_linesize()
+    total_height = len(lines) * line_height
+
+    # Если текст меньше доступной высоты, центрируем его, иначе начинаем с margin_top
+    if total_height < available_height:
+        y_offset = rect.top + margin_top + (available_height - total_height) // 2
+    else:
+        y_offset = rect.top + margin_top
+
     for line in lines:
         rendered_text = font.render(line, True, color)
         text_width = font.size(line)[0]
         x_offset = rect.left + (rect.width - text_width) // 2
         surface.blit(rendered_text, (x_offset, y_offset))
-        y_offset += font.size(line)[1]
+        y_offset += line_height
 
 
 class Announcement:
-    def __init__(self, content=None, size=(300, 300), font_size=20, position='center', background_image=None, master=None, render_func=None):
+    def __init__(self, content=None, size=(300, 300), font_size=20, position='center', background_image=None,
+                 master=None, render_func=None):
         self.content = content
         self.size = size
         self.font_size = font_size
@@ -118,5 +133,3 @@ class Announcement:
         if self.button_rect and self.button_rect.collidepoint(mouse_pos):
             if self.master and self.master.announcements:
                 self.master.announcements.remove(self)
-
-

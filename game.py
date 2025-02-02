@@ -3,6 +3,7 @@ from data import *
 from board import *
 from level import *
 from announcement import *
+from database import save_completed_level, get_completed_levels, save_level_result, get_best_result
 
 
 class Game:
@@ -37,27 +38,63 @@ class Game:
         self.pause_menu.add_button("Продолжить игру", (300, 200), self.resume_game)
         self.pause_menu.add_button("Выйти в меню", (300, 300), self.return_to_main_menu)
 
-        # Меню выбора уровня
-        for i in range(1, 11):
-            x = 300
-            y = 50 + (i - 1) * 50
-            if i <= max(self.level_manager.completed_levels, default=0) + 1:
-                self.level_select_menu.add_button(f"Уровень {i}", (x, y), lambda x=i: self.start_level(x), color='gray')
-            else:
-                self.level_select_menu.add_button(f"Уровень {i}", (x, y),lambda x=i: self.start_level(x), color='black')
+        # Первоначальное создание меню выбора уровня
+        self.update_level_select_menu()
 
         # Меню завершения уровня
         self.level_end_menu.add_button("Выйти в меню", (300, 400), self.return_to_main_menu)
+
+    def update_level_select_menu(self):
+        """Перестраивает меню выбора уровня с учетом пройденных уровней и добавляет значки информации."""
+        self.level_select_menu.buttons = []  # Очистка старых кнопок
+        font = pygame.font.Font(None, 36)  # Меньший шрифт
+        vertical_spacing = 55  # Интервал между кнопками
+        initial_offset = 50  # Начальное смещение сверху
+        for i in range(1, 11):
+            x = 300
+            y = initial_offset + (i - 1) * vertical_spacing
+            # Цвет кнопки: серый для пройденного, иначе — черный
+            color = 'gray' if i in self.level_manager.completed_levels else 'black'
+            button = {
+                "text": f"Уровень {i}",
+                "position": (x, y),
+                "action": lambda x=i: self.start_level(x),
+                "color": color,
+                "level": i
+            }
+            if i in self.level_manager.completed_levels:
+                text_surface = font.render(button["text"], True, 'white')
+                text_rect = text_surface.get_rect(center=(x - 15, y))  # смещение текста влево
+                # Сделаем кнопку компактной: inflate(40, 15)
+                rect = text_rect.inflate(40, 15)
+                # Определяем прямоугольник для значка информации – в правом верхнем углу кнопки
+                info_rect = pygame.Rect(rect.right - 25, rect.top + 5, 20, 20)
+                button["info_rect"] = info_rect
+                button["action_info"] = lambda lvl=i: self.show_best_result(lvl)
+            self.level_select_menu.buttons.append(button)
+
+    def show_best_result(self, level):
+        """Отображает уведомление с лучшим результатом для данного уровня."""
+        best = get_best_result(level)
+        if best:
+            score, time_val = best
+            message = f"Лучший результат для уровня {level}:\nСчёт: {score}\nВремя: {time_val:.2f} сек."
+        else:
+            message = f"Для уровня {level} пока нет результатов."
+        # Добавляем уведомление в меню выбора уровней
+        self.level_select_menu.announcements.append(
+            Announcement(message, (350, 100), master=self.level_select_menu)
+        )
 
     def start_game(self):
         self.state = GameState.GAME
         self.start_level(self.level_manager.current_level)
 
     def start_level(self, level_number):
-        """if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
+        if level_number > 1 and (level_number - 1 not in self.level_manager.completed_levels):
             self.level_select_menu.announcements.append(
                 Announcement(f"Уровень {level_number} не доступен", (300, 100), master=self.level_select_menu))
-            return"""
+            return
         self.level_manager.current_level = level_number
         level = self.level_manager.generate_level(level_number)
         self.board = Board(20, 20, 0, 0, waves=level.waves, towers_data=towers_data, level=level_number,
@@ -67,6 +104,7 @@ class Game:
         self.state = GameState.GAME
 
     def show_level_select(self):
+        self.update_level_select_menu()  # Обновляем меню перед показом
         self.state = GameState.LEVEL_SELECT
 
     def return_to_main_menu(self):
@@ -88,30 +126,25 @@ class Game:
 
         if self.board.win:
             self.level_manager.completed_levels.add(self.level_manager.current_level)
+            save_completed_level(self.level_manager.current_level)  # Сохранение уровня
+            save_level_result(self.level_manager.current_level, self.board.score, self.board.level_time, True)
             result_text = "Победа!"
         else:
+            save_level_result(self.level_manager.current_level, self.board.score, self.board.level_time, False)
             result_text = "Поражение!"
 
-        # Создание уведомления с результатами уровня
         def render_results(surface):
             font = pygame.font.Font(None, 48)
             y_offset = 100
 
-            # Результат (победа/поражение)
             result_surface = font.render(f"Результат: {result_text}", True, 'white')
             surface.blit(result_surface, result_surface.get_rect(center=(300, y_offset)))
-
-            # Счет
             y_offset += 50
             score_surface = font.render(f"Счет: {self.board.score}", True, 'white')
             surface.blit(score_surface, score_surface.get_rect(center=(300, y_offset)))
-
-            # Время
             y_offset += 50
             time_surface = font.render(f"Время: {self.board.level_time:.2f} сек.", True, 'white')
             surface.blit(time_surface, time_surface.get_rect(center=(300, y_offset)))
-
-            # Здоровье (сердечки)
             y_offset += 50
             for i in range(3):
                 x_offset = 240 + i * 40
@@ -120,7 +153,6 @@ class Game:
                 else:
                     surface.blit(self.grey_heart_image, (x_offset, y_offset))
 
-            # Рендер кнопки "Выйти в меню"
             button_font = pygame.font.Font(None, 36)
             button_text = button_font.render("Выйти в меню", True, 'white')
             button_rect = button_text.get_rect(center=(300, y_offset + 100))
@@ -129,7 +161,8 @@ class Game:
             self.level_end_menu.add_button("Выйти в меню", (300, y_offset + 100), self.return_to_main_menu)
 
         self.level_end_menu.announcements.append(
-            Announcement(render_func=render_results, position=(0, 0), master=self.level_end_menu))
+            Announcement(render_func=render_results, position=(0, 0), master=self.level_end_menu)
+        )
 
     def game_loop(self):
         while self.running:
@@ -186,7 +219,7 @@ class GameState:
 class LevelManager:
     def __init__(self):
         self.current_level = 1
-        self.completed_levels = set()
+        self.completed_levels = get_completed_levels()
 
     def generate_level(self, difficulty):
         levels = {1: DefaultLevel(1),
@@ -209,8 +242,11 @@ class Menu:
         self.buttons = []
         self.announcements = []
 
-    def add_button(self, text, position, action, color='black'):
-        self.buttons.append({"text": text, "position": position, "action": action, "color": color})
+    def add_button(self, text, position, action, color='black', **kwargs):
+        """Можно передать дополнительные параметры, например info_rect, action_info, level и т.п."""
+        button = {"text": text, "position": position, "action": action, "color": color}
+        button.update(kwargs)
+        self.buttons.append(button)
 
     def render(self):
         if self.announcements:
@@ -222,15 +258,31 @@ class Menu:
             return
 
         for button in self.buttons:
-            text = self.font.render(button["text"], True, 'white')
-            rect = text.get_rect(center=button["position"])
-            pygame.draw.rect(self.screen, button["color"], rect.inflate(20, 10))
-            self.screen.blit(text, rect)
+            text_surface = self.font.render(button["text"], True, 'white')
+            text_center = (button["position"][0] - 15, button["position"][1])
+            text_rect = text_surface.get_rect(center=text_center)
+            rect = text_rect.inflate(55, 15)
+            pygame.draw.rect(self.screen, button["color"], rect)
+            self.screen.blit(text_surface, text_rect)
+
+            if "info_rect" in button:
+                info_rect = pygame.Rect(rect.right - 25, rect.top + 5, 20, 20)
+                button["info_rect"] = info_rect
+                pygame.draw.rect(self.screen, 'blue', info_rect)
+                info_text = pygame.font.Font(None, 20).render("i", True, 'white')
+                info_text_rect = info_text.get_rect(center=info_rect.center)
+                self.screen.blit(info_text, info_text_rect)
 
     def handle_click(self, mouse_pos):
         for button in self.buttons:
-            text = self.font.render(button["text"], True, 'white')
-            rect = text.get_rect(center=button["position"])
+            text_surface = self.font.render(button["text"], True, 'white')
+            rect = text_surface.get_rect(center=button["position"])
+            # Если есть значок информации, проверяем его область в приоритете
+            if "info_rect" in button and button["info_rect"].collidepoint(mouse_pos):
+                if "action_info" in button:
+                    button["action_info"]()
+                continue  # не вызываем основное действие кнопки, если клик пришёл по инфо-иконке
+
             if rect.collidepoint(mouse_pos):
                 button["action"]()
 

@@ -346,6 +346,7 @@ class Board:
 
     def enemy_on_end_of_way(self):
         self.health -= 1
+        self.score -= 100
 
         if self.health <= 0:
             self.game_state = False
