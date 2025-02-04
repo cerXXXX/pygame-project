@@ -50,10 +50,10 @@ class Game:
         font = pygame.font.Font(None, 36)  # Меньший шрифт
         vertical_spacing = 55  # Интервал между кнопками
         initial_offset = 50  # Начальное смещение сверху
+
         for i in range(1, 11):
             x = 300
             y = initial_offset + (i - 1) * vertical_spacing
-            # Цвет кнопки: серый для пройденного, иначе — черный
             color = 'gray' if i in self.level_manager.completed_levels else 'black'
             button = {
                 "text": f"Уровень {i}",
@@ -65,13 +65,15 @@ class Game:
             if i in self.level_manager.completed_levels:
                 text_surface = font.render(button["text"], True, 'white')
                 text_rect = text_surface.get_rect(center=(x - 15, y))  # смещение текста влево
-                # Сделаем кнопку компактной: inflate(40, 15)
                 rect = text_rect.inflate(40, 15)
-                # Определяем прямоугольник для значка информации – в правом верхнем углу кнопки
                 info_rect = pygame.Rect(rect.right - 25, rect.top + 5, 20, 20)
                 button["info_rect"] = info_rect
                 button["action_info"] = lambda lvl=i: self.show_best_result(lvl)
             self.level_select_menu.buttons.append(button)
+
+        # **Добавляем кнопку "Назад"**
+        self.level_select_menu.add_button("Назад", (100, 550), self.return_to_main_menu)
+
 
     def show_best_result(self, level):
         """Отображает уведомление с лучшим результатом для данного уровня."""
@@ -181,7 +183,7 @@ class Game:
                     elif self.state == GameState.GAME:
                         self.board.get_click(event.pos)
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p and self.state == GameState.GAME:
+                    if event.key == pygame.K_ESCAPE:
                         self.toggle_pause()
 
             if self.board and self.state == GameState.GAME:
@@ -261,7 +263,10 @@ class Menu:
             text_surface = self.font.render(button["text"], True, 'white')
             text_center = (button["position"][0] - 15, button["position"][1])
             text_rect = text_surface.get_rect(center=text_center)
-            rect = text_rect.inflate(55, 15)
+            if button["text"] == "Назад":
+                rect = text_rect.inflate(30, 10)  # Уменьшенный размер
+            else:
+                rect = text_rect.inflate(55, 15)
             pygame.draw.rect(self.screen, button["color"], rect)
             self.screen.blit(text_surface, text_rect)
 
