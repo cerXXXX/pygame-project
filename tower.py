@@ -5,6 +5,8 @@ from bullet import *
 
 
 class Tower(pygame.sprite.Sprite):
+    """Класс башни"""
+
     def __init__(self, pos, image, rate_of_fire=2, damage=5, visibility_zone=200, cost=100, armor_piercing=0,
                  kill_zone=None, board=None):
         super().__init__()
@@ -30,13 +32,18 @@ class Tower(pygame.sprite.Sprite):
         self.kill_zone = kill_zone
 
     def update(self, screen, enemies):
-        # Target logic
+        """Обновление башни"""
+
+        # если есть цель и она жива, то проверяем дистанцю до нее
         if self.target and self.target.alive():
             distance = math.sqrt((self.rect.centerx - self.target.rect.centerx) ** 2 +
                                  (self.rect.centery - self.target.rect.centery) ** 2)
+
+            # если дистанция до цели больше чем зона видимости, то цель сбрасывается
             if distance > self.visibility_zone:
                 self.target = None
         else:
+            # определение ближайшей цели
             closest_enemy = None
             closest_distance = float('inf')
             for enemy in enemies:
@@ -48,18 +55,17 @@ class Tower(pygame.sprite.Sprite):
             if closest_enemy:
                 self.target = closest_enemy
 
-        # Shooting logic
+        # если время стрельбы
         current_time = time.time()
         if self.target and current_time - self.last_shot_time >= 1 / self.rate_of_fire:
             self.shoot()
-            self.last_shot_time = current_time  # Update last shot time
+            self.last_shot_time = current_time
 
-        # Update bullets
-        # print(self.bullets)
+        # обновление всех пуль
         self.bullets.update()
         self.bullets.draw(screen)
 
-        # Rotate tower
+        # поворот башни
         if self.target:
             dx = self.target.rect.centerx - self.rect.centerx
             dy = self.target.rect.centery - self.rect.centery
@@ -69,16 +75,20 @@ class Tower(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = old_center
 
-        # Draw tower
+        # отрисовка башни
         screen.blit(self.image, self.rect)
 
     def shoot(self):
+        """Стрельба"""
+
+        # количество пуль зависит от скорости стрельбы
         quantity = 1 if self.rate_of_fire <= 2 else 2 if self.rate_of_fire <= 4 else 3
+
+        # если имеет радиус поражение (ракеты), то стреляем с радиусом поражения
         if self.kill_zone:
             bullet = BigBullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing,
                                board=self.board, kill_radius=self.kill_zone)
-        else:
+        else:  # иначе без него
             bullet = Bullet(self.rect.center, self.target, self.damage, armor_piercing=self.armor_piercing,
                             quantity=quantity)
-        # (self.armor_piercing)
         self.bullets.add(bullet)

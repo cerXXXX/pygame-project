@@ -54,7 +54,6 @@ towers_data = [
     }
 ]
 
-
 ways_data = {1: [(-1, 10), (0, 10), (1, 10), (2, 10), (3, 10), (4, 10), (5, 10), (6, 10), (7, 10), (8, 10), (9, 10),
                  (10, 10), (11, 10), (12, 10), (13, 10), (14, 10), (15, 10), (16, 10), (17, 10), (18, 10), (19, 10),
                  (20, 10)],
@@ -153,45 +152,44 @@ waves_data = {
 }
 
 background_data = {1: None,
-2: None,
-3: None,
-4: None,
-5: None,
-6: None,
-7: None,
-8: None,
-9: None,
-10: None}
+                   2: None,
+                   3: None,
+                   4: None,
+                   5: None,
+                   6: None,
+                   7: None,
+                   8: None,
+                   9: None,
+                   10: None}
 
 building_places_data = {1: [(5, 7), (12, 7), (8, 12), (16, 12)],
-2: [(5, 7), (12, 7), (8, 12), (16, 12)],
-3: [(7, 2), (2, 7), (10, 8), (10, 14)],
-4: [(7, 2), (2, 7), (10, 8), (10, 14)],
-5: [(9, 4), (2, 7), (16, 7), (9, 9)],
-6: [(9, 4), (2, 7), (16, 7), (9, 9)],
-7: [(10, 5), (2, 7), (16, 11), (9, 12)],
-8: [(10, 5), (2, 7), (16, 11), (9, 12)],
-9: [(1, 7), (15, 9), (10, 10), (1, 12), (6, 16)],
-10: [(4, 6), (15, 9), (10, 10), (1, 12), (6, 16)]}
+                        2: [(5, 7), (12, 7), (8, 12), (16, 12)],
+                        3: [(7, 2), (2, 7), (10, 8), (10, 14)],
+                        4: [(7, 2), (2, 7), (10, 8), (10, 14)],
+                        5: [(9, 4), (2, 7), (16, 7), (9, 9)],
+                        6: [(9, 4), (2, 7), (16, 7), (9, 9)],
+                        7: [(10, 5), (2, 7), (16, 11), (9, 12)],
+                        8: [(10, 5), (2, 7), (16, 11), (9, 12)],
+                        9: [(1, 7), (15, 9), (10, 10), (1, 12), (6, 16)],
+                        10: [(4, 6), (15, 9), (10, 10), (1, 12), (6, 16)]}
 
 super_events_data = {
-1: [],  # Суперсобытий нет на первом уровне
-2: [],  # На втором уровне тоже нет событий
-3: [SuperEvent(0.01, text='ArtilleryStrike', board=None)],  # Частота удвоена (было 0.005)
-4: [SuperEvent(0.04, text='ArtilleryStrike', board=None)],  # Было 0.02
-5: [SuperEvent(0.06, text='ArtilleryStrike', board=None)],  # Было 0.03
-6: [SuperEvent(0.1, text='ArtilleryStrike', board=None),  # Было 0.05
-    SuperEvent(0.04, text='Reinforcements', board=None)],
-7: [SuperEvent(0.2, text='ArtilleryStrike', board=None),  # Было 0.1
-    SuperEvent(0.1, text='Freeze', board=None)],  # Было 0.05
-8: [SuperEvent(0.3, text='ArtilleryStrike', board=None),  # Было 0.15
-    SuperEvent(0.16, text='Freeze', board=None),  # Было 0.08
-    SuperEvent(0.04, text='Reinforcements', board=None)],
-9: [SuperEvent(0.4, text='ArtilleryStrike', board=None),  # Было 0.2
-    SuperEvent(0.2, text='Freeze', board=None),  # Было 0.1
-    SuperEvent(0.06, text='Reinforcements', board=None)],
-10: [SuperEvent(0.5, text='ArtilleryStrike', board=None),  # Было 0.25
-     SuperEvent(0.3, text='Freeze', board=None),  # Было 0.15
-     SuperEvent(0.1, text='Reinforcements', board=None),
-     SuperEvent(0.05, text='ChaosMode', board=None)]
+    1: [],  # ивентов нет на первом и втором уровне
+    2: [],
+    3: [SuperEvent(0.01, text='ArtilleryStrike', board=None)],
+    4: [SuperEvent(0.04, text='ArtilleryStrike', board=None)],
+    5: [SuperEvent(0.06, text='ArtilleryStrike', board=None)],
+    6: [SuperEvent(0.1, text='ArtilleryStrike', board=None),
+        ],
+    7: [SuperEvent(0.2, text='ArtilleryStrike', board=None),
+        SuperEvent(0.1, text='Freeze', board=None)],
+    8: [SuperEvent(0.3, text='ArtilleryStrike', board=None),
+        SuperEvent(0.16, text='Freeze', board=None),
+        ],
+    9: [SuperEvent(0.4, text='ArtilleryStrike', board=None),
+        SuperEvent(0.2, text='Freeze', board=None),
+        ],
+    10: [SuperEvent(0.5, text='ArtilleryStrike', board=None),
+         SuperEvent(0.3, text='Freeze', board=None),
+         ]
 }
