@@ -15,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, -90)
         self.rect = self.image.get_rect()
         self.reward = reward
-        self.board = board  # Сохраняем ссылку на объект Board
+        self.board = board
         self.health = max_health
         self.max_health = max_health
 
