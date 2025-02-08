@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 from animation import *
+from data import resource_path
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -135,7 +136,8 @@ class Enemy(pygame.sprite.Sprite):
             self.board.score += self.reward
             self.kill()
             self.board.currency += self.reward
-            self.board.add_animation(Animation(self.board, self.rect.center, 'assets/explosion', 4, 0.25 / 4))
+            self.board.add_animation(
+                Animation(self.board, self.rect.center, resource_path('assets/explosion'), 4, 0.25 / 4))
 
     def get_cell(self):
         """Возвращает координаты текущей клетки"""
@@ -149,27 +151,31 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Tank(Enemy):
-    def __init__(self, pos, way, image='assets/tank1.png', speed=30, turn_speed=2, board=None, armor=100, reward=150):
+    def __init__(self, pos, way, image=resource_path('assets/tank1.png'), speed=30, turn_speed=2, board=None, armor=100,
+                 reward=150):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, armor=armor, reward=reward)
         self.name = 'Tank'
 
 
 class Car(Enemy):
-    def __init__(self, pos, way, image='assets/car1.png', speed=55, turn_speed=3, board=None, armor=20, reward=100):
+    def __init__(self, pos, way, image=resource_path('assets/car1.png'), speed=55, turn_speed=3, board=None, armor=20,
+                 reward=100):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
                          reward=reward)
         self.name = 'Car'
 
 
 class FastCar(Enemy):
-    def __init__(self, pos, way, image='assets/car2.png', speed=85, turn_speed=4, board=None, armor=20, reward=60):
+    def __init__(self, pos, way, image=resource_path('assets/car2.png'), speed=85, turn_speed=4, board=None, armor=20,
+                 reward=60):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=50, armor=armor,
                          reward=reward)
         self.name = 'FastCar'
 
 
 class HeavyTank(Enemy):
-    def __init__(self, pos, way, image='assets/tank2.png', speed=18, turn_speed=1, board=None, armor=120, reward=285):
+    def __init__(self, pos, way, image=resource_path('assets/tank2.png'), speed=18, turn_speed=1, board=None, armor=120,
+                 reward=285):
         super().__init__(pos, image, way, speed=speed, turn_speed=turn_speed, board=board, max_health=130, armor=armor,
                          reward=reward)
         self.name = 'HeavyTank'

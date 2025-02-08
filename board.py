@@ -1,5 +1,7 @@
 from copy import deepcopy
 import pygame
+
+from data import resource_path
 from events import *
 import time
 import random
@@ -34,7 +36,7 @@ class Board:
         self.selected_tower = None
 
         self.currency = 1000  # начальное количество монет
-        self.coin_icon = pygame.image.load('assets/coin.png')  # иконка монеты
+        self.coin_icon = pygame.image.load(resource_path('assets/coin.png'))  # иконка монеты
         self.coin_icon = pygame.transform.scale(self.coin_icon, (30, 30))
 
         self.super_events = []
@@ -71,11 +73,11 @@ class Board:
         self.announcements = []
 
         # Загрузка изображений сердец
-        self.heart_image = pygame.image.load('assets/heart.png')
-        self.grey_heart_image = pygame.image.load('assets/grey_heart.png')
-        self.road_img = pygame.image.load('assets/road1.png')
-        self.ground_img = pygame.image.load('assets/ground.png')
-        self.add_tower_img = pygame.image.load('assets/add_tower2.png')
+        self.heart_image = pygame.image.load(resource_path('assets/heart.png'))
+        self.grey_heart_image = pygame.image.load(resource_path('assets/grey_heart.png'))
+        self.road_img = pygame.image.load(resource_path('assets/road1.png'))
+        self.ground_img = pygame.image.load(resource_path('assets/ground.png'))
+        self.add_tower_img = pygame.image.load(resource_path('assets/add_tower2.png'))
 
     def set_super_events(self, events: list[SuperEvent]):
         """Установить список событий"""

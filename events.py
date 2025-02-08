@@ -3,6 +3,7 @@ import time
 import math
 from animation import *
 import random
+from data import resource_path
 
 
 class SuperEvent:
@@ -63,8 +64,9 @@ class ArtilleryStrike(SuperEvent):
         if time.time() - self.start_time > 4.9375:
             for i in self.points:
                 i.kill()
-                self.board.animation_list.append(Animation(self.board, i.rect.center, 'assets/explosion', 4, 0.25 / 4,
-                                                           resize_to=(2 * self.radius, 2 * self.radius)))
+                self.board.animation_list.append(
+                    Animation(self.board, i.rect.center, resource_path('assets/explosion'), 4, 0.25 / 4,
+                              resize_to=(2 * self.radius, 2 * self.radius)))
         # обновляем анимации взрыва
         for i in self.points:
             i.update(screen)
@@ -78,7 +80,7 @@ class ArtilleryCircle(pygame.sprite.Sprite):
         super().__init__()
         self.radius = radius
         self.pos = pos
-        self.image = pygame.image.load('assets/artillerystrike1.png').convert_alpha()
+        self.image = pygame.image.load(resource_path('assets/artillerystrike1.png')).convert_alpha()
         self.image = pygame.transform.scale(self.image, (int(self.radius * 2), int(self.radius * 2)))
         self.rect = self.image.get_rect()
         self.rect.center = pos

@@ -23,8 +23,8 @@ class Game:
         self.level_select_menu = Menu(self.screen)
         self.level_end_menu = Menu(self.screen)
 
-        self.heart_image = pygame.image.load('assets/heart.png')
-        self.grey_heart_image = pygame.image.load('assets/grey_heart.png')
+        self.heart_image = pygame.image.load(resource_path('assets/heart.png'))
+        self.grey_heart_image = pygame.image.load(resource_path('assets/grey_heart.png'))
 
         self.setup_menus()
 

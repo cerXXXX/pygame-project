@@ -1,10 +1,23 @@
+import sys
+import os
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 from enemy import *
 from events import *
 
 towers_data = [
     {
         'name': 'Артиллерийская башня',
-        'icon': 'assets/tower3.png',
+        'icon': resource_path('assets/tower3.png'),
         'rate_of_fire': 2.0,  # Чуть медленнее стреляет
         'damage': 11,  # Снижен урон
         'visibility_zone': 220,
@@ -14,7 +27,7 @@ towers_data = [
     },
     {
         'name': 'Стрелковая башня',
-        'icon': 'assets/tower4.png',
+        'icon': resource_path('assets/tower4.png'),
         'rate_of_fire': 5,
         'damage': 2,
         'visibility_zone': 320,
@@ -24,7 +37,7 @@ towers_data = [
     },
     {
         'name': 'Башня Гатлинга',
-        'icon': 'assets/tower10.png',
+        'icon': resource_path('assets/tower10.png'),
         'rate_of_fire': 35,  # Чуть снизили скорострельность
         'damage': 0.85,  # Еще меньше урона
         'visibility_zone': 450,
@@ -34,7 +47,7 @@ towers_data = [
     },
     {
         'name': 'Противотанковая башня',
-        'icon': 'assets/tower9.png',
+        'icon': resource_path('assets/tower9.png'),
         'rate_of_fire': 0.7,  # Стала еще медленнее
         'damage': 20,  # Чуть меньше урон
         'visibility_zone': 200,
@@ -44,7 +57,7 @@ towers_data = [
     },
     {
         'name': 'Ракетная установка',
-        'icon': 'assets/tower7.png',
+        'icon': resource_path('assets/tower7.png'),
         'rate_of_fire': 0.5,  # Еще медленнее
         'damage': 80,  # Чуть меньше урон
         'visibility_zone': 200,
